@@ -1,61 +1,51 @@
 #include "socks5.h"
 
-/*
-o X '00' NO AUTHENTICATION REQUIRED
-o X '01' GSSAPI
-o X '02' USERNAME / PASSWORD
-o X '03' to X '7F' IANA ASSIGNED
-o X '80' to X 'FE' RESERVED FOR PRIVATE METHODS
-o X 'FF' NO ACCEPTABLE METHODS
-*/
-
-static int reponse_method(unsigned char method, socks5_t *socks5) {
-  if (method == 0x00)
+static int reponse_method(socks5_t *socks5, unsigned char method) {
+  if (method == 0x00) // NO AUTHENTICATION REQUIRED
     return 0;
-  else if (method == 0x01)
-    return 0;
-  else if (method == 0x02)
+  else if (method == 0x01) // GSSAPI
+    return -1;
+  else if (method == 0x02) // USERNAME / PASSWORD
     return socks5_connect_user(socks5);
-  else if (method >= 0x03 && method <= 0x7F)
-    return 0;
-  else if (method >= 0x80 && method <= 0xFE)
-    return 0;
-  else
+  else if (method >= 0x03 && method <= 0x7F) // IANA ASSIGNED
+    return -1;
+  else if (method >= 0x80 && method <= 0xFE) // RESERVED FOR PRIVATE METHODS
+    return -1;
+  else // NO ACCEPTABLE METHODS
     return -1;
 }
 
-/*
-o VER protocol version: X '05'
-o CMD
-  o CONNECT X '01'
-  o BIND X '02'
-  o UDP ASSOCIATE X '03'
-o RSV RESERVED
-o ATYP address type of following address
-  o IP V4 address: X '01'
-  o DOMAINNAME : X '03'
-  o IP V6 address: X '04'
-o DST.ADDR desired destination address
-o DST.PORT desired destination port in network octet order
-*/
-
-static void set_atyp(unsigned char *msg, socks5_t socks5) {}
-
-static int method_dependent() {}
+static int request_method_dependent(socks5_t *socks5) {
+  msg[0] = 0x05;
+  msg[1] = socks5->command;
+  msg[2] = 0x00;
+  if (socks5->ipv4 != NULL) {
+    msg[3] = 0x01;
+  } else if (socks5->domainName != NULL) {
+    msg[3] = 0x03;
+    msg[4] = (uint8_t)strlen(socks5->domainName);
+    for (uint32_t itr = 0; itr != mag[4]; ++itr)
+      msg[itr + 5] = socks5->domainName[itr];
+  } else if (socks5->ipv6 != NULL) {
+    msg[3] = 0x04;
+  }
+}
 
 int socks5_connect(socks5_t *socks5) {
-  // First Request 0x05 0x01 0x00
-  return 0;
+  if (socks5->fd == -1)
+    return -1;
   write(socks5->fd, "\x05\x01\x00", 3);
-  // Response
-
   unsigned char tmp[512];
+  if (read(socks5->fd, tmp, 512) != 2)
+    return -1;
+  reponse_method(socks5, tmp[1]);
+  request_method_dependent(socks5);
+
   int ret = read(socks5->fd, tmp, 512);
+
   for (int itr = 0; itr < ret; ++itr)
-    printf("%d", tmp[itr]);
-  //  reponse_method(tmp[1]);
+    printf("%d:", tmp[itr]);
 
-  method_dependent();
-
+  printf("\n");
   return 0;
 }

@@ -12,6 +12,7 @@
 typedef struct _socks5 socks5_t;
 
 struct _socks5 {
+  uint8_t command;
   char *domainName;
   int fd;
   uint8_t *ipv4;

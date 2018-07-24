@@ -1,7 +1,7 @@
 #include "socks5.h"
 
 int main(void) {
-  socks5_t socks5;
+  socks5_t socks5 = {0};
   socks5.fd = socket(AF_INET, SOCK_STREAM, 0);
   if (socks5.fd == -1) {
     printf("Error\n");
@@ -16,6 +16,8 @@ int main(void) {
     return 0;
   }
   socks5_set_address(&socks5, "82.102.24.167", 22);
+
+  socks5_set_command(&socks5, );
 
   // socks5_set_address(&socks5, "5800:10C3:E3C3:F1AA:48E3:D923:D494:AAFF", 22);
   // socks5_set_address(&socket, "google.com", 80);
