@@ -15,11 +15,9 @@ int main(void) {
     printf("Error connect\n");
     return 0;
   }
-  socks5_set_address(&socks5, "82.102.24.167", 22);
-
   // socks5_set_command(&socks5, );
-
-  // socks5_set_address(&socks5, "5800:10C3:E3C3:F1AA:48E3:D923:D494:AAFF", 22);
+  // socks5_set_address(&socks5, "82.102.24.167", 22);
+  socks5_set_address(&socks5, "5800:10C3:E3C3:F1AA:48E3:D923:D494:AAFF", 22);
   // socks5_set_address(&socket, "google.com", 80);
   socks5_connect(&socks5);
   return 0;
