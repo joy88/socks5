@@ -16,6 +16,8 @@ static int reponse_method(socks5_t *socks5, unsigned char method) {
 }
 
 static int request_method_dependent(socks5_t *socks5) {
+  char msg[512];
+
   msg[0] = 0x05;
   msg[1] = socks5->command;
   msg[2] = 0x00;
@@ -24,7 +26,7 @@ static int request_method_dependent(socks5_t *socks5) {
   } else if (socks5->domainName != NULL) {
     msg[3] = 0x03;
     msg[4] = (uint8_t)strlen(socks5->domainName);
-    for (uint32_t itr = 0; itr != mag[4]; ++itr)
+    for (uint32_t itr = 0; itr != msg[4]; ++itr)
       msg[itr + 5] = socks5->domainName[itr];
   } else if (socks5->ipv6 != NULL) {
     msg[3] = 0x04;
