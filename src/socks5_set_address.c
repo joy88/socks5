@@ -59,7 +59,12 @@ static int get_ipv6(socks5_t *socks5, char *address) {
   return 0;
 }
 
-static int get_domainName(socks5_t *socks5, char *address) { return -1; }
+static int get_domainName(socks5_t *socks5, char *address) {
+  uint32_t length = strlen(address);
+  if (length > 255)
+    return -1;
+  socks5->domainName = strdup(address);
+}
 
 int socks5_set_address(socks5_t *socks5, char *address, uint16_t port) {
   {

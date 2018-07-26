@@ -28,6 +28,7 @@ void free_socks5(socks5_t *socks5);
 int socks5_connect(socks5_t *socks5);
 int socks5_connect_user(socks5_t *socks5);
 int socks5_set_address(socks5_t *socks5, char *address, uint16_t port);
+void socks5_set_command(socks5_t *socks5, int command);
 int socks5_set_user_password(socks5_t *socks5, char *username, char *password);
 
 #endif
